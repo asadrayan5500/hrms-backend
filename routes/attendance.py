@@ -27,3 +27,15 @@ def get_attendance(employee_id: str):
         {"_id": 0}
     ))
     return records
+
+@router.put("/{employee_id}/{date}")
+def update_attendance(employee_id: str, date: str, attendance: AttendanceCreate):
+    existing_record = attendance_collection.find_one({"employee_id": employee_id, "date": date})
+    if not existing_record:
+        raise HTTPException(status_code=404, detail="Attendance record not found")
+
+    attendance_collection.update_one(
+        {"employee_id": employee_id, "date": date},
+        {"$set": attendance.dict()}
+    )
+    return {"message": "Attendance updated successfully"}

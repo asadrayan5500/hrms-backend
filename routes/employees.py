@@ -23,3 +23,15 @@ def delete_employee(employee_id: str):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Employee not found")
     return {"message": "Employee deleted"}
+
+@router.put("/{employee_id}")
+def update_employee(employee_id: str, employee: EmployeeCreate):
+    existing_employee = employee_collection.find_one({"employee_id": employee_id})
+    if not existing_employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    employee_collection.update_one(
+        {"employee_id": employee_id},
+        {"$set": employee.dict()}
+    )
+    return {"message": "Employee updated successfully"}
